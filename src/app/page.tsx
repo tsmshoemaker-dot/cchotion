@@ -55,7 +55,7 @@ export default function Home() {
     <div className="max-w-3xl mx-auto px-4 py-8 w-full">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
-          My Notes
+          Cchotion
         </h1>
         <button
           onClick={createNote}
