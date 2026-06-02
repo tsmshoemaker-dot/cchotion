@@ -6,11 +6,13 @@ import dynamic from "next/dynamic";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
+const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false });
 
 type Note = {
   id: string;
   title: string;
   content: Record<string, unknown> | null;
+  pdfUrl: string | null;
   updatedAt: string;
 };
 
@@ -25,6 +27,7 @@ export default function NotePage({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -38,8 +41,18 @@ export default function NotePage({
       .catch(() => setLoading(false));
   }, [id]);
 
+  useEffect(() => {
+    titleRef.current?.focus();
+  }, [loading]);
+
+  useEffect(() => {
+    if (note) document.title = `${note.title} - Cchotion`;
+    return () => { document.title = "Cchotion"; };
+  }, [note]);
+
   const save = async (data: Partial<Note>) => {
     setSaving(true);
+    setSaveError(false);
     const res = await fetch(`/api/notes/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -49,6 +62,8 @@ export default function NotePage({
       const updated = await res.json();
       setNote(updated);
       setSavedAt(new Date().toLocaleTimeString());
+    } else {
+      setSaveError(true);
     }
     setSaving(false);
   };
@@ -60,6 +75,14 @@ export default function NotePage({
     saveTimeoutRef.current = setTimeout(() => {
       save({ title: newTitle });
     }, 800);
+  };
+
+  const handlePdfUpload = (url: string) => {
+    save({ pdfUrl: url });
+  };
+
+  const handlePdfRemove = () => {
+    save({ pdfUrl: null });
   };
 
   const handleContentUpdate = (doc: Record<string, unknown>) => {
@@ -76,13 +99,14 @@ export default function NotePage({
   };
 
   const deleteNote = async () => {
+    if (!window.confirm("Delete this note?")) return;
     await fetch(`/api/notes/${id}`, { method: "DELETE" });
     router.push("/");
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-neutral-500">
+      <div className="flex items-center justify-center min-h-screen text-[#8a8886] text-sm">
         Loading...
       </div>
     );
@@ -90,7 +114,7 @@ export default function NotePage({
 
   if (!note) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-neutral-500">
+      <div className="flex items-center justify-center min-h-screen text-[#8a8886] text-sm">
         Note not found.
       </div>
     );
@@ -98,28 +122,31 @@ export default function NotePage({
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 w-full">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#e1dfdd] dark:border-[#3b3a39]">
         <button
           onClick={() => router.push("/")}
-          className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition cursor-pointer"
+          className="flex items-center gap-1.5 text-xs text-[#0078d4] hover:underline transition cursor-pointer"
         >
-          <ArrowLeft size={20} />
-          Back
+          <ArrowLeft size={14} />
+          Back to notes
         </button>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {saving && (
-            <span className="text-sm text-neutral-400">Saving...</span>
+            <span className="text-xs text-[#8a8886]">Saving...</span>
           )}
-          {savedAt && !saving && (
-            <span className="text-sm text-neutral-400">
+          {saveError && (
+            <span className="text-xs text-[#d92c2c]">Failed to save</span>
+          )}
+          {savedAt && !saving && !saveError && (
+            <span className="text-xs text-[#8a8886]">
               Saved at {savedAt}
             </span>
           )}
           <button
             onClick={deleteNote}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition cursor-pointer"
+            className="flex items-center gap-1.5 px-2 py-1 text-xs text-[#8a8886] hover:text-[#d92c2c] hover:bg-[#f3f2f1] dark:hover:bg-[#37373d] transition cursor-pointer"
           >
-            <Trash2 size={16} />
+            <Trash2 size={14} />
             Delete
           </button>
         </div>
@@ -130,11 +157,15 @@ export default function NotePage({
         type="text"
         value={note.title}
         onChange={handleTitleChange}
-        className="w-full text-3xl font-bold bg-transparent border-none outline-none mb-6 text-neutral-900 dark:text-white placeholder-neutral-400"
+        className="w-full text-2xl font-semibold bg-transparent border-none outline-none mb-5 text-[#323130] dark:text-[#e1dfdd] placeholder-[#8a8886]"
         placeholder="Note title..."
       />
 
-      <Editor content={note.content} onUpdate={handleContentUpdate} />
+      {note.pdfUrl && (
+        <PdfViewer pdfUrl={note.pdfUrl} onRemove={handlePdfRemove} />
+      )}
+
+      <Editor content={note.content} onUpdate={handleContentUpdate} onPdfUpload={handlePdfUpload} />
     </div>
   );
 }

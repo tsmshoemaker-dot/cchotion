@@ -3,18 +3,23 @@
 import { useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Bold, Italic, List, ListOrdered, Heading2 } from "lucide-react";
+import Image from "@tiptap/extension-image";
+import { Bold, Italic, List, ListOrdered, Heading2, ImageIcon, FileText } from "lucide-react";
 
 type EditorProps = {
   content: Record<string, unknown> | null;
   onUpdate: (json: Record<string, unknown>) => void;
+  onPdfUpload?: (url: string) => void;
 };
 
-export default function Editor({ content, onUpdate }: EditorProps) {
+export default function Editor({ content, onUpdate, onPdfUpload }: EditorProps) {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      Image.configure({ inline: false, allowBase64: true }),
+    ],
     content: content ?? {
       type: "doc",
       content: [{ type: "paragraph" }],
@@ -22,7 +27,7 @@ export default function Editor({ content, onUpdate }: EditorProps) {
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose-base dark:prose-invert max-w-none focus:outline-none min-h-[300px] px-4 py-2",
+          "prose prose-sm sm:prose-base dark:prose-invert max-w-none focus:outline-none min-h-[300px] px-4 py-2 text-[#323130] dark:text-[#e1dfdd]",
       },
     },
     onUpdate: ({ editor: ed }) => {
@@ -48,6 +53,46 @@ export default function Editor({ content, onUpdate }: EditorProps) {
     };
   }, []);
 
+  const addImage = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const form = new FormData();
+      form.append("file", file);
+      try {
+        const res = await fetch("/api/upload", { method: "POST", body: form });
+        if (res.ok) {
+          const { url } = await res.json();
+          editor.chain().focus().setImage({ src: url }).run();
+        }
+      } catch {}
+    };
+    input.click();
+  };
+
+  const addPdf = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/pdf";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const form = new FormData();
+      form.append("file", file);
+      try {
+        const res = await fetch("/api/upload", { method: "POST", body: form });
+        if (res.ok) {
+          const { url } = await res.json();
+          onPdfUpload?.(url);
+        }
+      } catch {}
+    };
+    input.click();
+  };
+
   if (!editor) return null;
 
   const ToolButton = ({
@@ -62,10 +107,10 @@ export default function Editor({ content, onUpdate }: EditorProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`p-2 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 transition ${
+      className={`p-1.5 rounded-sm hover:bg-[#e1dfdd] dark:hover:bg-[#3b3a39] transition ${
         active
-          ? "bg-neutral-300 dark:bg-neutral-600 text-black dark:text-white"
-          : "text-neutral-600 dark:text-neutral-400"
+          ? "bg-[#deecf9] dark:bg-[#37373d] text-[#0078d4] dark:text-[#0078d4]"
+          : "text-[#605e5c] dark:text-[#8a8886]"
       }`}
     >
       {children}
@@ -73,41 +118,48 @@ export default function Editor({ content, onUpdate }: EditorProps) {
   );
 
   return (
-    <div className="border border-neutral-300 dark:border-neutral-600 rounded-lg overflow-hidden bg-white dark:bg-neutral-900">
-      <div className="flex items-center gap-1 px-2 py-1.5 border-b border-neutral-300 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-800">
+    <div className="border border-[#e1dfdd] dark:border-[#3b3a39] bg-white dark:bg-[#252526]">
+      <div className="flex items-center gap-1 px-2 py-1 border-b border-[#e1dfdd] dark:border-[#3b3a39] bg-[#faf9f8] dark:bg-[#2d2d2d]">
         <ToolButton
           active={editor.isActive("bold")}
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
-          <Bold size={18} />
+          <Bold size={17} />
         </ToolButton>
         <ToolButton
           active={editor.isActive("italic")}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
-          <Italic size={18} />
+          <Italic size={17} />
         </ToolButton>
-        <div className="w-px h-5 bg-neutral-300 dark:bg-neutral-600 mx-1" />
+        <div className="w-px h-4 bg-[#e1dfdd] dark:bg-[#3b3a39] mx-1" />
         <ToolButton
           active={editor.isActive("heading", { level: 2 })}
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
           }
         >
-          <Heading2 size={18} />
+          <Heading2 size={17} />
         </ToolButton>
-        <div className="w-px h-5 bg-neutral-300 dark:bg-neutral-600 mx-1" />
+        <div className="w-px h-4 bg-[#e1dfdd] dark:bg-[#3b3a39] mx-1" />
         <ToolButton
           active={editor.isActive("bulletList")}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
         >
-          <List size={18} />
+          <List size={17} />
         </ToolButton>
         <ToolButton
           active={editor.isActive("orderedList")}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
         >
-          <ListOrdered size={18} />
+          <ListOrdered size={17} />
+        </ToolButton>
+        <div className="w-px h-4 bg-[#e1dfdd] dark:bg-[#3b3a39] mx-1" />
+        <ToolButton active={false} onClick={addImage}>
+          <ImageIcon size={17} />
+        </ToolButton>
+        <ToolButton active={false} onClick={addPdf}>
+          <FileText size={17} />
         </ToolButton>
       </div>
       <EditorContent editor={editor} />

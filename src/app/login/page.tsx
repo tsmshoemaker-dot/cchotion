@@ -35,24 +35,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center px-4 bg-[#f3f2f1] dark:bg-[#1b1a1a]">
       <div className="w-full max-w-sm">
-        <div className="border border-neutral-300 dark:border-neutral-600 rounded-xl p-8 bg-white dark:bg-neutral-900">
-          <h1 className="text-2xl font-bold text-center mb-2 text-neutral-900 dark:text-white">
+        <div className="border border-[#e1dfdd] dark:border-[#3b3a39] p-8 bg-white dark:bg-[#252526]">
+          <h1 className="text-xl font-semibold text-center mb-1 text-[#323130] dark:text-[#e1dfdd]">
             Cchotion
           </h1>
-          <p className="text-sm text-center text-neutral-500 mb-8">
-            Sign in to your notes
+          <p className="text-xs text-center text-[#8a8886] mb-6">
+            Sign in
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <input
                 name="username"
                 type="text"
                 placeholder="Username"
                 required
-                className="w-full px-4 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+                className="w-full px-3 py-2 text-sm border border-[#e1dfdd] dark:border-[#3b3a39] bg-white dark:bg-[#1b1a1a] text-[#323130] dark:text-[#e1dfdd] placeholder-[#8a8886] focus:outline-none focus:border-[#0078d4] dark:focus:border-[#0078d4]"
               />
             </div>
             <div>
@@ -61,24 +61,24 @@ export default function LoginPage() {
                 type="password"
                 placeholder="Password"
                 required
-                className="w-full px-4 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+                className="w-full px-3 py-2 text-sm border border-[#e1dfdd] dark:border-[#3b3a39] bg-white dark:bg-[#1b1a1a] text-[#323130] dark:text-[#e1dfdd] placeholder-[#8a8886] focus:outline-none focus:border-[#0078d4] dark:focus:border-[#0078d4]"
               />
             </div>
 
             {error && (
-              <p className="text-sm text-red-500 text-center">{error}</p>
+              <p className="text-xs text-[#d92c2c] text-center">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-700 dark:hover:bg-neutral-200 transition disabled:opacity-50 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-[#0078d4] text-white hover:bg-[#005a9e] transition disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 "Signing in..."
               ) : (
                 <>
-                  <LogIn size={18} />
+                  <LogIn size={15} />
                   Sign in
                 </>
               )}
