@@ -128,7 +128,7 @@ export default function Editor({ content, onUpdate, onPdfUpload, onEpubUpload }:
     <button
       type="button"
       onClick={onClick}
-      className={`p-1.5 rounded-sm hover:bg-[#e1dfdd] dark:hover:bg-[#3b3a39] transition ${
+      className={`shrink-0 p-2.5 sm:p-1.5 rounded-sm hover:bg-[#e1dfdd] dark:hover:bg-[#3b3a39] transition ${
         active
           ? "bg-[#deecf9] dark:bg-[#37373d] text-[#0078d4] dark:text-[#0078d4]"
           : "text-[#605e5c] dark:text-[#8a8886]"
@@ -140,7 +140,7 @@ export default function Editor({ content, onUpdate, onPdfUpload, onEpubUpload }:
 
   return (
     <div className="border border-[#e1dfdd] dark:border-[#3b3a39] bg-white dark:bg-[#252526]">
-      <div className="flex items-center gap-1 px-2 py-1 border-b border-[#e1dfdd] dark:border-[#3b3a39] bg-[#faf9f8] dark:bg-[#2d2d2d]">
+      <div className="flex items-center gap-0.5 sm:gap-1 px-2 py-1 border-b border-[#e1dfdd] dark:border-[#3b3a39] bg-[#faf9f8] dark:bg-[#2d2d2d] overflow-x-auto flex-nowrap">
         <ToolButton
           active={editor.isActive("bold")}
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -153,7 +153,7 @@ export default function Editor({ content, onUpdate, onPdfUpload, onEpubUpload }:
         >
           <Italic size={17} />
         </ToolButton>
-        <div className="w-px h-4 bg-[#e1dfdd] dark:bg-[#3b3a39] mx-1" />
+        <div className="shrink-0 w-px h-5 sm:h-4 bg-[#e1dfdd] dark:bg-[#3b3a39] mx-0.5 sm:mx-1" />
         <ToolButton
           active={editor.isActive("heading", { level: 2 })}
           onClick={() =>
@@ -162,7 +162,7 @@ export default function Editor({ content, onUpdate, onPdfUpload, onEpubUpload }:
         >
           <Heading2 size={17} />
         </ToolButton>
-        <div className="w-px h-4 bg-[#e1dfdd] dark:bg-[#3b3a39] mx-1" />
+        <div className="shrink-0 w-px h-5 sm:h-4 bg-[#e1dfdd] dark:bg-[#3b3a39] mx-0.5 sm:mx-1" />
         <ToolButton
           active={editor.isActive("bulletList")}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -175,7 +175,7 @@ export default function Editor({ content, onUpdate, onPdfUpload, onEpubUpload }:
         >
           <ListOrdered size={17} />
         </ToolButton>
-        <div className="w-px h-4 bg-[#e1dfdd] dark:bg-[#3b3a39] mx-1" />
+        <div className="shrink-0 w-px h-5 sm:h-4 bg-[#e1dfdd] dark:bg-[#3b3a39] mx-0.5 sm:mx-1" />
         <ToolButton active={false} onClick={addImage}>
           <ImageIcon size={17} />
         </ToolButton>

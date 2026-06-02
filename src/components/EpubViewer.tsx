@@ -128,7 +128,7 @@ export default function EpubViewer({ epubUrl, onRemove }: EpubViewerProps) {
         <div>
           <div
             ref={viewerRef}
-            className="w-full h-[60vh] bg-[#f3f2f1] dark:bg-[#1e1e1e]"
+            className="w-full h-[50vh] sm:h-[60vh] bg-[#f3f2f1] dark:bg-[#1e1e1e]"
           >
             {loading && (
               <div className="flex items-center justify-center h-full text-xs text-[#8a8886]">
@@ -142,24 +142,24 @@ export default function EpubViewer({ epubUrl, onRemove }: EpubViewerProps) {
             )}
           </div>
           {!loading && !error && (
-            <div className="flex items-center justify-between px-3 py-2 bg-[#faf9f8] dark:bg-[#2d2d2d] border-t border-[#e1dfdd] dark:border-[#3b3a39]">
-              <button
-                onClick={goPrev}
-                disabled={atStart}
-                className="flex items-center gap-1 text-xs text-[#0078d4] disabled:text-[#8a8886] disabled:cursor-not-allowed hover:underline transition cursor-pointer"
-              >
-                <ChevronLeft size={14} />
-                Previous
-              </button>
-              <button
-                onClick={goNext}
-                disabled={atEnd}
-                className="flex items-center gap-1 text-xs text-[#0078d4] disabled:text-[#8a8886] disabled:cursor-not-allowed hover:underline transition cursor-pointer"
-              >
-                Next
-                <ChevronRightNav size={14} />
-              </button>
-            </div>
+          <div className="flex items-center justify-between px-3 py-2 bg-[#faf9f8] dark:bg-[#2d2d2d] border-t border-[#e1dfdd] dark:border-[#3b3a39]">
+            <button
+              onClick={goPrev}
+              disabled={atStart}
+              className="flex items-center gap-1 text-sm sm:text-xs text-[#0078d4] disabled:text-[#8a8886] disabled:cursor-not-allowed hover:underline transition cursor-pointer py-2 sm:py-0"
+            >
+              <ChevronLeft size={16} />
+              Previous
+            </button>
+            <button
+              onClick={goNext}
+              disabled={atEnd}
+              className="flex items-center gap-1 text-sm sm:text-xs text-[#0078d4] disabled:text-[#8a8886] disabled:cursor-not-allowed hover:underline transition cursor-pointer py-2 sm:py-0"
+            >
+              Next
+              <ChevronRightNav size={16} />
+            </button>
+          </div>
           )}
         </div>
       )}

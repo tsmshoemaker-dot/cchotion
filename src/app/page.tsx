@@ -82,7 +82,7 @@ export default function Home() {
             <div
               key={note.id}
               onClick={() => router.push(`/notes/${note.id}`)}
-              className={`flex items-center justify-between px-4 py-3 cursor-pointer transition group ${
+              className={`flex items-center justify-between px-4 py-4 sm:py-3 cursor-pointer transition group ${
                 i !== notes.length - 1 ? "border-b border-[#e1dfdd] dark:border-[#3b3a39]" : ""
               } hover:bg-[#f3f2f1] dark:hover:bg-[#37373d]`}
             >
@@ -98,7 +98,7 @@ export default function Home() {
               </div>
               <button
                 onClick={(e) => deleteNote(e, note.id)}
-                className="p-1 text-[#8a8886] hover:text-[#d92c2c] opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                className="p-2 sm:p-1 text-[#8a8886] hover:text-[#d92c2c] sm:opacity-0 sm:group-hover:opacity-100 transition cursor-pointer"
                 title="Delete note"
               >
                 <Trash2 size={14} />

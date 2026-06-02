@@ -35,7 +35,7 @@ export default function PdfViewer({ pdfUrl, onRemove }: PdfViewerProps) {
         <object
           data={pdfUrl}
           type="application/pdf"
-          className="w-full h-[60vh] bg-[#f3f2f1] dark:bg-[#1e1e1e]"
+          className="w-full h-[50vh] sm:h-[60vh] bg-[#f3f2f1] dark:bg-[#1e1e1e]"
         >
           <div className="flex items-center justify-center h-full text-sm text-[#8a8886]">
             <a
@@ -48,6 +48,17 @@ export default function PdfViewer({ pdfUrl, onRemove }: PdfViewerProps) {
             </a>
           </div>
         </object>
+        <div className="sm:hidden flex items-center justify-center py-2 bg-[#faf9f8] dark:bg-[#2d2d2d] border-t border-[#e1dfdd] dark:border-[#3b3a39]">
+          <a
+            href={pdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-sm text-[#0078d4] hover:underline py-2"
+          >
+            <FileText size={16} />
+            Open PDF in browser
+          </a>
+        </div>
       </div>
     </div>
   );

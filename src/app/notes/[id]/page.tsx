@@ -44,6 +44,7 @@ export default function NotePage({
   }, [id]);
 
   useEffect(() => {
+    if ("ontouchstart" in window) return;
     titleRef.current?.focus();
   }, [loading]);
 
