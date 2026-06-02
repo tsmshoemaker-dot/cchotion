@@ -31,7 +31,7 @@ export default function PdfViewer({ pdfUrl, onRemove }: PdfViewerProps) {
           Remove
         </button>
       </div>
-      {!collapsed && (
+      <div style={{ display: collapsed ? "none" : "block" }}>
         <object
           data={pdfUrl}
           type="application/pdf"
@@ -48,7 +48,7 @@ export default function PdfViewer({ pdfUrl, onRemove }: PdfViewerProps) {
             </a>
           </div>
         </object>
-      )}
+      </div>
     </div>
   );
 }
