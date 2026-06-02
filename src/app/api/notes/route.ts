@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const notes = await prisma.note.findMany({
       orderBy: { updatedAt: "desc" },
-      select: { id: true, title: true, pdfUrl: true, updatedAt: true, createdAt: true },
+      select: { id: true, title: true, pdfUrl: true, epubUrl: true, updatedAt: true, createdAt: true },
     });
     return NextResponse.json(notes);
   } catch {

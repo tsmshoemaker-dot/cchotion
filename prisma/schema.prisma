@@ -11,6 +11,7 @@ model Note {
   title     String   @default("Untitled")
   content   Json?
   pdfUrl    String?
+  epubUrl   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

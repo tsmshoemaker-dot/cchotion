@@ -4,15 +4,16 @@ import { useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
-import { Bold, Italic, List, ListOrdered, Heading2, ImageIcon, FileText } from "lucide-react";
+import { Bold, Italic, List, ListOrdered, Heading2, ImageIcon, FileText, BookOpen } from "lucide-react";
 
 type EditorProps = {
   content: Record<string, unknown> | null;
   onUpdate: (json: Record<string, unknown>) => void;
   onPdfUpload?: (url: string) => void;
+  onEpubUpload?: (url: string) => void;
 };
 
-export default function Editor({ content, onUpdate, onPdfUpload }: EditorProps) {
+export default function Editor({ content, onUpdate, onPdfUpload, onEpubUpload }: EditorProps) {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const editor = useEditor({
@@ -93,6 +94,26 @@ export default function Editor({ content, onUpdate, onPdfUpload }: EditorProps) 
     input.click();
   };
 
+  const addEpub = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".epub,application/epub+zip";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const form = new FormData();
+      form.append("file", file);
+      try {
+        const res = await fetch("/api/upload", { method: "POST", body: form });
+        if (res.ok) {
+          const { url } = await res.json();
+          onEpubUpload?.(url);
+        }
+      } catch {}
+    };
+    input.click();
+  };
+
   if (!editor) return null;
 
   const ToolButton = ({
@@ -160,6 +181,9 @@ export default function Editor({ content, onUpdate, onPdfUpload }: EditorProps) 
         </ToolButton>
         <ToolButton active={false} onClick={addPdf}>
           <FileText size={17} />
+        </ToolButton>
+        <ToolButton active={false} onClick={addEpub}>
+          <BookOpen size={17} />
         </ToolButton>
       </div>
       <EditorContent editor={editor} />

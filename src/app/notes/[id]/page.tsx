@@ -7,12 +7,14 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false });
+const EpubViewer = dynamic(() => import("@/components/EpubViewer"), { ssr: false });
 
 type Note = {
   id: string;
   title: string;
   content: Record<string, unknown> | null;
   pdfUrl: string | null;
+  epubUrl: string | null;
   updatedAt: string;
 };
 
@@ -83,6 +85,14 @@ export default function NotePage({
 
   const handlePdfRemove = () => {
     save({ pdfUrl: null });
+  };
+
+  const handleEpubUpload = (url: string) => {
+    save({ epubUrl: url });
+  };
+
+  const handleEpubRemove = () => {
+    save({ epubUrl: null });
   };
 
   const handleContentUpdate = (doc: Record<string, unknown>) => {
@@ -165,7 +175,11 @@ export default function NotePage({
         <PdfViewer pdfUrl={note.pdfUrl} onRemove={handlePdfRemove} />
       )}
 
-      <Editor content={note.content} onUpdate={handleContentUpdate} onPdfUpload={handlePdfUpload} />
+      {note.epubUrl && (
+        <EpubViewer epubUrl={note.epubUrl} onRemove={handleEpubRemove} />
+      )}
+
+      <Editor content={note.content} onUpdate={handleContentUpdate} onPdfUpload={handlePdfUpload} onEpubUpload={handleEpubUpload} />
     </div>
   );
 }

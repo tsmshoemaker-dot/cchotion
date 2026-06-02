@@ -11,13 +11,18 @@ export async function POST(req: NextRequest) {
 
     const isImage = file.type.startsWith("image/");
     const isPdf = file.type === "application/pdf";
-    if (!isImage && !isPdf) {
-      return NextResponse.json({ error: "File must be an image or PDF" }, { status: 400 });
+    const isEpub = file.type === "application/epub+zip";
+    if (!isImage && !isPdf && !isEpub) {
+      return NextResponse.json({ error: "File must be an image, PDF, or EPUB" }, { status: 400 });
     }
 
-    const maxSize = isPdf ? 20 * 1024 * 1024 : 5 * 1024 * 1024;
+    let maxSize = 5 * 1024 * 1024;
+    let sizeLabel = "5MB";
+    if (isPdf) { maxSize = 20 * 1024 * 1024; sizeLabel = "20MB"; }
+    if (isEpub) { maxSize = 50 * 1024 * 1024; sizeLabel = "50MB"; }
+
     if (file.size > maxSize) {
-      return NextResponse.json({ error: `File too large (max ${isPdf ? "20MB" : "5MB"})` }, { status: 400 });
+      return NextResponse.json({ error: `File too large (max ${sizeLabel})` }, { status: 400 });
     }
 
     const blob = await put(file.name, file, { access: "public" });

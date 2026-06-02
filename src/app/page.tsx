@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, FileText } from "lucide-react";
+import { Plus, Trash2, FileText, BookOpen } from "lucide-react";
 
 type NoteSummary = {
   id: string;
   title: string;
   pdfUrl: string | null;
+  epubUrl: string | null;
   updatedAt: string;
   createdAt: string;
 };
@@ -87,6 +88,7 @@ export default function Home() {
             >
               <div className="min-w-0 flex-1">
                 <h2 className="text-sm font-medium text-[#323130] dark:text-[#e1dfdd] truncate flex items-center gap-1.5">
+                  {note.epubUrl && <BookOpen size={12} className="text-[#0078d4] shrink-0" />}
                   {note.pdfUrl && <FileText size={12} className="text-[#0078d4] shrink-0" />}
                   {note.title}
                 </h2>
