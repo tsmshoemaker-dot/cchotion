@@ -21,7 +21,15 @@ export default function EpubViewer({ epubUrl, onRemove }: EpubViewerProps) {
   const filename = epubUrl.split("/").pop() || "document.epub";
 
   useEffect(() => {
+    if (collapsed) return;
+
     let cancelled = false;
+    setLoading(true);
+    setError(false);
+    setAtStart(true);
+    setAtEnd(false);
+    renditionRef.current = null;
+
     (async () => {
       try {
         const ePub = (await import("epubjs")).default;
@@ -33,7 +41,7 @@ export default function EpubViewer({ epubUrl, onRemove }: EpubViewerProps) {
         try {
           const meta = (book as any).packaging?.metadata;
           if (meta?.title) setBookTitle(meta.title);
-        } catch {} // metadata is optional
+        } catch {}
 
         const rendition = book.renderTo(viewerRef.current!, {
           width: "100%",
@@ -71,8 +79,9 @@ export default function EpubViewer({ epubUrl, onRemove }: EpubViewerProps) {
     return () => {
       cancelled = true;
       renditionRef.current?.destroy();
+      renditionRef.current = null;
     };
-  }, [epubUrl]);
+  }, [epubUrl, collapsed]);
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -93,15 +102,6 @@ export default function EpubViewer({ epubUrl, onRemove }: EpubViewerProps) {
     return () => observer.disconnect();
   }, []);
 
-  const handleToggle = () => {
-    setCollapsed((c) => {
-      if (c) {
-        setTimeout(() => renditionRef.current?.resize?.(), 50);
-      }
-      return !c;
-    });
-  };
-
   const goPrev = () => renditionRef.current?.prev();
   const goNext = () => renditionRef.current?.next();
 
@@ -109,7 +109,7 @@ export default function EpubViewer({ epubUrl, onRemove }: EpubViewerProps) {
     <div className="border border-[#e1dfdd] dark:border-[#3b3a39] bg-white dark:bg-[#252526] mb-4">
       <div className="flex items-center justify-between px-3 py-2 bg-[#faf9f8] dark:bg-[#2d2d2d] border-b border-[#e1dfdd] dark:border-[#3b3a39]">
         <button
-          onClick={handleToggle}
+          onClick={() => setCollapsed(!collapsed)}
           className="flex items-center gap-2 text-xs text-[#323130] dark:text-[#e1dfdd] cursor-pointer"
         >
           {collapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
@@ -124,43 +124,45 @@ export default function EpubViewer({ epubUrl, onRemove }: EpubViewerProps) {
           Remove
         </button>
       </div>
-      <div style={{ display: collapsed ? "none" : "block" }}>
-        <div
-          ref={viewerRef}
-          className="w-full h-[60vh] bg-[#f3f2f1] dark:bg-[#1e1e1e]"
-        >
-          {loading && (
-            <div className="flex items-center justify-center h-full text-xs text-[#8a8886]">
-              Loading EPUB...
-            </div>
-          )}
-          {error && (
-            <div className="flex items-center justify-center h-full text-xs text-[#d92c2c]">
-              Failed to load EPUB.
+      {!collapsed && (
+        <div>
+          <div
+            ref={viewerRef}
+            className="w-full h-[60vh] bg-[#f3f2f1] dark:bg-[#1e1e1e]"
+          >
+            {loading && (
+              <div className="flex items-center justify-center h-full text-xs text-[#8a8886]">
+                Loading EPUB...
+              </div>
+            )}
+            {error && (
+              <div className="flex items-center justify-center h-full text-xs text-[#d92c2c]">
+                Failed to load EPUB.
+              </div>
+            )}
+          </div>
+          {!loading && !error && (
+            <div className="flex items-center justify-between px-3 py-2 bg-[#faf9f8] dark:bg-[#2d2d2d] border-t border-[#e1dfdd] dark:border-[#3b3a39]">
+              <button
+                onClick={goPrev}
+                disabled={atStart}
+                className="flex items-center gap-1 text-xs text-[#0078d4] disabled:text-[#8a8886] disabled:cursor-not-allowed hover:underline transition cursor-pointer"
+              >
+                <ChevronLeft size={14} />
+                Previous
+              </button>
+              <button
+                onClick={goNext}
+                disabled={atEnd}
+                className="flex items-center gap-1 text-xs text-[#0078d4] disabled:text-[#8a8886] disabled:cursor-not-allowed hover:underline transition cursor-pointer"
+              >
+                Next
+                <ChevronRightNav size={14} />
+              </button>
             </div>
           )}
         </div>
-        {!loading && !error && (
-          <div className="flex items-center justify-between px-3 py-2 bg-[#faf9f8] dark:bg-[#2d2d2d] border-t border-[#e1dfdd] dark:border-[#3b3a39]">
-            <button
-              onClick={goPrev}
-              disabled={atStart}
-              className="flex items-center gap-1 text-xs text-[#0078d4] disabled:text-[#8a8886] disabled:cursor-not-allowed hover:underline transition cursor-pointer"
-            >
-              <ChevronLeft size={14} />
-              Previous
-            </button>
-            <button
-              onClick={goNext}
-              disabled={atEnd}
-              className="flex items-center gap-1 text-xs text-[#0078d4] disabled:text-[#8a8886] disabled:cursor-not-allowed hover:underline transition cursor-pointer"
-            >
-              Next
-              <ChevronRightNav size={14} />
-            </button>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
