@@ -157,6 +157,11 @@ export default function Home() {
           <NoteEditor
             noteId={selectedId}
             onDelete={() => setSelectedId(null)}
+            onNoteUpdate={(updated) =>
+              setNotes((prev) =>
+                prev.map((n) => (n.id === updated.id ? { ...n, title: updated.title, updatedAt: updated.updatedAt } : n))
+              )
+            }
           />
         </div>
       </main>

@@ -22,9 +22,10 @@ type Note = {
 type NoteEditorProps = {
   noteId: string | null;
   onDelete?: () => void;
+  onNoteUpdate?: (note: { id: string; title: string; updatedAt: string }) => void;
 };
 
-export default function NoteEditor({ noteId, onDelete }: NoteEditorProps) {
+export default function NoteEditor({ noteId, onDelete, onNoteUpdate }: NoteEditorProps) {
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -69,6 +70,7 @@ export default function NoteEditor({ noteId, onDelete }: NoteEditorProps) {
       const updated = await res.json();
       setNote(updated);
       setSavedAt(new Date().toLocaleTimeString());
+      onNoteUpdate?.({ id: updated.id, title: updated.title, updatedAt: updated.updatedAt });
     } else {
       setSaveError(true);
     }
