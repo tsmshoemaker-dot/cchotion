@@ -40,7 +40,7 @@ export default function Home() {
 
   const deleteNote = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (!window.confirm("Delete this note?")) return;
+    if (!window.confirm("Delete this tile?")) return;
     const res = await fetch(`/api/notes/${id}`, { method: "DELETE" });
     if (res.ok) {
       setNotes((prev) => prev.filter((n) => n.id !== id));

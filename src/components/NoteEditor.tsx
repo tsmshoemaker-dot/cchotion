@@ -111,7 +111,7 @@ export default function NoteEditor({ noteId, onDelete }: NoteEditorProps) {
   };
 
   const deleteNote = async () => {
-    if (!noteId || !window.confirm("Delete this note?")) return;
+    if (!noteId || !window.confirm("Delete this tile?")) return;
     await fetch(`/api/notes/${noteId}`, { method: "DELETE" });
     onDelete?.();
   };
