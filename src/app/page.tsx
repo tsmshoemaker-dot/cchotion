@@ -67,7 +67,7 @@ export default function Home() {
       <aside className={`shrink-0 border-r border-[#e1dfdd] dark:border-[#3b3a39] bg-[#faf9f8] dark:bg-[#2d2d2d] flex flex-col overflow-hidden transition-all duration-200 ${sidebarOpen ? "w-72 lg:w-80" : "w-0"} ${selectedId && !sidebarOpen ? "hidden md:flex" : selectedId ? "hidden md:flex" : "flex"}`}>
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#e1dfdd] dark:border-[#3b3a39] shrink-0 min-w-0">
           <h1 className="text-sm font-semibold text-[#323130] dark:text-[#e1dfdd] whitespace-nowrap">
-            Notes
+            Tiles
           </h1>
           <div className="flex items-center gap-1">
             <button
