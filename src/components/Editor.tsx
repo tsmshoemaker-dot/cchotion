@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
+
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import { Bold, Italic, List, ListOrdered, Heading2, ImageIcon, FileText, BookOpen } from "lucide-react";
+
+export type EditorHandle = {
+  getContent: () => Record<string, unknown>;
+};
 
 type EditorProps = {
   content: Record<string, unknown> | null;
@@ -13,7 +18,10 @@ type EditorProps = {
   onEpubUpload?: (url: string) => void;
 };
 
-export default function Editor({ content, onUpdate, onPdfUpload, onEpubUpload }: EditorProps) {
+const Editor = forwardRef<EditorHandle, EditorProps>(function Editor({ content, onUpdate, onPdfUpload, onEpubUpload }, ref) {
+  useImperativeHandle(ref, () => ({
+    getContent: () => editor?.getJSON() ?? { type: "doc", content: [] },
+  }));
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const editor = useEditor({
@@ -189,4 +197,6 @@ export default function Editor({ content, onUpdate, onPdfUpload, onEpubUpload }:
       <EditorContent editor={editor} />
     </div>
   );
-}
+});
+
+export default Editor;

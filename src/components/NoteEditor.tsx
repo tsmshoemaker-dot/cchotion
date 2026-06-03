@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { Trash2 } from "lucide-react";
+import { Save, Trash2 } from "lucide-react";
+
+import type { EditorHandle } from "@/components/Editor";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false });
@@ -30,6 +32,7 @@ export default function NoteEditor({ noteId, onDelete }: NoteEditorProps) {
   const [saveError, setSaveError] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const editorRef = useRef<EditorHandle>(null);
 
   useEffect(() => {
     if (!noteId) {
@@ -97,6 +100,16 @@ export default function NoteEditor({ noteId, onDelete }: NoteEditorProps) {
     save({ epubUrl: null });
   };
 
+  const handleSave = () => {
+    if (!note) return;
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+    const content = editorRef.current?.getContent() ?? note.content ?? { type: "doc", content: [] };
+    save({ title: note.title, content });
+  };
+
   const handleContentUpdate = (doc: Record<string, unknown>) => {
     if (note?.title === "Untitled") {
       const content = (doc as { content?: { type?: string; content?: { text?: string }[] }[] }).content;
@@ -156,13 +169,22 @@ export default function NoteEditor({ noteId, onDelete }: NoteEditorProps) {
             </span>
           )}
         </div>
-        <button
-          onClick={deleteNote}
-          className="flex items-center gap-1.5 px-2 py-1 text-xs text-[#8a8886] hover:text-[#d92c2c] hover:bg-[#f3f2f1] dark:hover:bg-[#37373d] transition cursor-pointer"
-        >
-          <Trash2 size={14} />
-          Delete
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleSave}
+            className="flex items-center gap-1.5 px-2 py-1 text-xs text-[#8a8886] hover:text-[#0078d4] hover:bg-[#f3f2f1] dark:hover:bg-[#37373d] transition cursor-pointer"
+          >
+            <Save size={14} />
+            Save
+          </button>
+          <button
+            onClick={deleteNote}
+            className="flex items-center gap-1.5 px-2 py-1 text-xs text-[#8a8886] hover:text-[#d92c2c] hover:bg-[#f3f2f1] dark:hover:bg-[#37373d] transition cursor-pointer"
+          >
+            <Trash2 size={14} />
+            Delete
+          </button>
+        </div>
       </div>
 
       <input
@@ -183,7 +205,7 @@ export default function NoteEditor({ noteId, onDelete }: NoteEditorProps) {
           <EpubViewer epubUrl={note.epubUrl} onRemove={handleEpubRemove} />
         )}
 
-        <Editor content={note.content} onUpdate={handleContentUpdate} onPdfUpload={handlePdfUpload} onEpubUpload={handleEpubUpload} />
+        <Editor ref={editorRef} content={note.content} onUpdate={handleContentUpdate} onPdfUpload={handlePdfUpload} onEpubUpload={handleEpubUpload} />
       </div>
     </div>
   );
