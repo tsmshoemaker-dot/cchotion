@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash2, FileText, BookOpen, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, FileText, BookOpen, ArrowLeft, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import NoteEditor from "@/components/NoteEditor";
 
 type NoteSummary = {
@@ -17,6 +17,7 @@ export default function Home() {
   const [notes, setNotes] = useState<NoteSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const fetchNotes = async () => {
     const res = await fetch("/api/notes");
@@ -63,18 +64,27 @@ export default function Home() {
   return (
     <div className="h-screen flex">
       {/* Sidebar */}
-      <aside className={`w-72 lg:w-80 shrink-0 border-r border-[#e1dfdd] dark:border-[#3b3a39] bg-[#faf9f8] dark:bg-[#2d2d2d] flex flex-col ${selectedId ? "hidden md:flex" : "flex"}`}>
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#e1dfdd] dark:border-[#3b3a39] shrink-0">
-          <h1 className="text-sm font-semibold text-[#323130] dark:text-[#e1dfdd]">
+      <aside className={`shrink-0 border-r border-[#e1dfdd] dark:border-[#3b3a39] bg-[#faf9f8] dark:bg-[#2d2d2d] flex flex-col overflow-hidden transition-all duration-200 ${sidebarOpen ? "w-72 lg:w-80" : "w-0"} ${selectedId && !sidebarOpen ? "hidden md:flex" : selectedId ? "hidden md:flex" : "flex"}`}>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#e1dfdd] dark:border-[#3b3a39] shrink-0 min-w-0">
+          <h1 className="text-sm font-semibold text-[#323130] dark:text-[#e1dfdd] whitespace-nowrap">
             Notes
           </h1>
-          <button
-            onClick={createNote}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs bg-[#0078d4] text-white rounded-sm hover:bg-[#005a9e] transition cursor-pointer"
-          >
-            <Plus size={14} />
-            New
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={createNote}
+              className="flex items-center gap-1.5 px-2 py-1 text-xs bg-[#0078d4] text-white rounded-sm hover:bg-[#005a9e] transition cursor-pointer whitespace-nowrap"
+            >
+              <Plus size={14} />
+              New
+            </button>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="p-1 text-[#8a8886] hover:text-[#323130] dark:hover:text-[#e1dfdd] transition cursor-pointer"
+              title="Collapse sidebar"
+            >
+              <PanelLeftClose size={16} />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto">
@@ -121,17 +131,28 @@ export default function Home() {
 
       {/* Main content */}
       <main className="flex-1 flex flex-col min-w-0 bg-white dark:bg-[#1b1a1a]">
-        {selectedId && (
-          <div className="md:hidden flex items-center px-4 py-2 border-b border-[#e1dfdd] dark:border-[#3b3a39] shrink-0">
+        <div className="flex items-center shrink-0 border-b border-[#e1dfdd] dark:border-[#3b3a39] min-h-0">
+          {!sidebarOpen && (
             <button
-              onClick={() => setSelectedId(null)}
-              className="flex items-center gap-1 text-xs text-[#0078d4] hover:underline transition cursor-pointer"
+              onClick={() => setSidebarOpen(true)}
+              className="hidden md:flex items-center gap-1 px-3 py-2 text-xs text-[#8a8886] hover:text-[#323130] dark:hover:text-[#e1dfdd] transition cursor-pointer border-r border-[#e1dfdd] dark:border-[#3b3a39]"
+              title="Expand sidebar"
             >
-              <ArrowLeft size={14} />
-              Back to notes
+              <PanelLeftOpen size={16} />
             </button>
-          </div>
-        )}
+          )}
+          {selectedId && (
+            <div className="md:hidden flex items-center px-4 py-2">
+              <button
+                onClick={() => setSelectedId(null)}
+                className="flex items-center gap-1 text-xs text-[#0078d4] hover:underline transition cursor-pointer"
+              >
+                <ArrowLeft size={14} />
+                Back to notes
+              </button>
+            </div>
+          )}
+        </div>
         <div className="flex-1 px-4 py-4 overflow-y-auto min-h-0">
           <NoteEditor
             noteId={selectedId}
