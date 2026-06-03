@@ -48,10 +48,6 @@ export default function NotePage({
     titleRef.current?.focus();
   }, [loading]);
 
-  useEffect(() => {
-    if (note) document.title = `${note.title} - Cchotion`;
-    return () => { document.title = "Cchotion"; };
-  }, [note]);
 
   const save = async (data: Partial<Note>) => {
     setSaving(true);
